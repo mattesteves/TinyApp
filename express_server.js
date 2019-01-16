@@ -1,20 +1,20 @@
+//server stuff and dependendcies
 var express = require("express");
 var app = express();
 var PORT = 8080; // default port 8080
 app.set("view engine", "ejs")
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
+var cookieParser = require('cookie-parser');
+app.use(cookieParser());
 
-//server stuff and dependendcies
-
-
+//creating my intital arry of urls
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
-//creating my intital arry of urls
-
+//if nothing is sent from the url
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -23,21 +23,33 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-app.get("/hello", (req, res) => {
-  var template = "<html><body>{var}Hello <b>World</b></body></html>\n"
-  res.send(template.replace('{var}', 'this'));
+app.post("/logout", (req,res)=>{
+  res.clearCookie("name")
+  res.redirect('/urls')
 });
 
-// just tests
+app.post("/login", (req,res)=> {
+  res.cookie("name",req.body.username)
+  console.log(`${req.body.username} just logged in.`);
+  console.log(req.cookies)
+  res.redirect('/urls')
 
+});
+
+
+//lists all URLs
 app.get("/urls", (req, res) => {
-  let templateVars = { shortURL: req.params.id, urls: urlDatabase
+  let templateVars = {
+   shortURL: req.params.id,
+   urls: urlDatabase,
+   username:req.cookies["name"]
    };
+
   res.render("urls_index", templateVars);
 });
 
-//lists urls
 
+//adds new URL
 app.post("/urls", (req, res) => {
   console.log(req.body);  // debug statement 
   var rando = generateRandomString();
@@ -46,6 +58,7 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${rando}`);       
 });
 
+//redirect urls function
 app.get("/u/:shortURL", (req, res) => {
   // let longURL = ...
   let code = req.params.shortURL;
@@ -54,28 +67,25 @@ app.get("/u/:shortURL", (req, res) => {
 
   res.redirect(longURL);
 });
-//redirect urls function
 
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
-//add urls
 
 
+//view a url's profile by its id
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id,
   urls: urlDatabase  };
   res.render("urls_show", templateVars);
 });
-//view a url's profile by its id
 
 app.post("/urls/:id/delete", (req, res) =>{
 var test= req.params.id
 delete urlDatabase[req.params.id]
 console.log ('attempting to delete' + test)
 res.redirect("/urls")
-
 });
 
 app.post("/urls/:id/POST", (req, res) =>{
@@ -83,7 +93,6 @@ var test = req.params.id;
 urlDatabase[req.params.id]= req.body.longURL
 console.log ('attempting to change ' + test)
 res.redirect("/urls")
-
 });
 
 function generateRandomString() {
@@ -97,5 +106,11 @@ function generateRandomString() {
 };
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`Matt\'s Tiny app listening on port ${PORT}!`);
 });
+
+
+// app.get("/hello", (req, res) => {
+//   var template = "<html><body>{var}Hello <b>World</b></body></html>\n"
+//   res.send(template.replace('{var}', 'this'));
+// });
