@@ -3,10 +3,18 @@
 <% include partials/_header.ejs %>
 <body>
 
- The long url is: <%= urls[shortURL] %>
+<h1>Short URL: <%= shortURL %></h1>
+<h2> for <%= urls[shortURL] %> </h2>
+<br>
 <br>
 
-The short url is only: <%= shortURL %>
+<form method="POST" action="/urls/<%= shortURL %>/POST">
+<label for="longURL">Edit: </label>
+<input id="longURL" type="text" name="longURL" placeholder="new info" style="width: 300px">
+
+<input type="submit" value="Update &#x1F6E0">		
+		    	
+</form>
 
 </body>
 </html>

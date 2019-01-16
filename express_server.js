@@ -78,6 +78,14 @@ res.redirect("/urls")
 
 });
 
+app.post("/urls/:id/POST", (req, res) =>{
+var test = req.params.id;
+urlDatabase[req.params.id]= req.body.longURL
+console.log ('attempting to change ' + test)
+res.redirect("/urls")
+
+});
+
 function generateRandomString() {
   var allChars= ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',1,2,3,4,5,6,7,8,9,0]
     var tempArr=[];

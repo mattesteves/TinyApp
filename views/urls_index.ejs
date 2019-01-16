@@ -6,7 +6,7 @@
     <% for(shorts in urls) { %>
 		    <form method="POST" action="/urls/<%= shorts %>/delete">
         <li><%= shorts %> = <%= urls[shorts] %>
-		    	<input type="submit" value="DESTROY!! &#x1F5d1">		
+		    	<a href="urls/<%= shorts %>"> &#x1F6E0 </a><input type="submit" value="DESTROY!! &#x1F5d1">		
 		</li><br>    	
 		    </form>
     <% }; %>
