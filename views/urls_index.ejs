@@ -5,7 +5,13 @@
 <ul>
     <% for(shorts in urls) { %>
         <li><%= shorts %> = <%= urls[shorts] %></li>
+		    <form method="POST" action="/urls/<%= shorts %>/delete">
+		    	<input type="submit" value="DESTROY!!">		    	
+		    </form>
     <% }; %>
 </ul>		
 </body>
 </html>
+
+<!-- 
+<form method="POST" action="/urls/9sm5xK/delete">...</form> -->

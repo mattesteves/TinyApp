@@ -70,6 +70,13 @@ app.get("/urls/:id", (req, res) => {
 });
 //view a url's profile by its id
 
+app.post("/urls/:id/delete", (req, res) =>{
+var test= req.params.id
+delete urlDatabase[req.params.id]
+console.log ('attempting to delete' + test)
+res.redirect("/urls")
+
+});
 
 function generateRandomString() {
   var allChars= ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',1,2,3,4,5,6,7,8,9,0]
