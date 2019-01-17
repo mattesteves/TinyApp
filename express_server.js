@@ -63,7 +63,6 @@ app.get("/urls", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   // let longURL = ...
   let code = req.params.shortURL;
-  console.log(code)
   let longURL = urlDatabase[code];
 
   res.redirect(longURL);
@@ -81,7 +80,6 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
    if (req.cookies.user_id){
     let uid= req.cookies.user_id;
-    console.log(users[uid]['name'])
     templateVars.uname= users[uid]['name'] 
   }
   templateVars.shortURL = req.params.id;
@@ -100,7 +98,6 @@ app.get("/register", (req, res)=>{
 app.get("/login", (req, res)=>{
     if (req.cookies.user_id){
     let uid= req.cookies.user_id;
-    console.log(users[uid]['name'])
     templateVars.uname= users[uid]['name'] 
   }
 
@@ -113,18 +110,14 @@ app.get("/login", (req, res)=>{
 
 //adds new URL
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // debug statement 
   var rando = generateRandomString();
   urlDatabase[rando]= req.body.longURL;
-  console.log(rando) // random string logged to console
   res.redirect(`/urls/${rando}`);       
 });
 
 app.post("/login", (req,res)=> {
     function findUser(email, password){
       for (emails in users)
-        console.log (users[emails]['email'])
-
       {
        if(users[emails]['email'] === email && users[emails]['password'] === password){
         return true
@@ -134,7 +127,6 @@ app.post("/login", (req,res)=> {
     }
   }
   var check = findUser(req.body.email, req.body.password);
-  console.log(check);
 
   if (check === true){
        console.log(`${users[emails]['name']} just logged in.`);
@@ -142,24 +134,11 @@ app.post("/login", (req,res)=> {
        res.redirect('/urls')
   } else {
     res.status(400);
-      console.log('whoopsies')
       res.redirect("/login")
   }
 
 
 });
-    // if(users[emails]['email'] === req.body.email && users[emails]['password'] === req.body.password){
-    //   res.cookie("user_id",req.body.id)
-  
-    // //   console.log(`${users[emails]['name']} just logged in.`);
-    // //   res.cookie("user_id", users[emails]['id']);
-    // //   res.redirect('/urls')
-    // return true
-    // } else {
-    //   res.status(400);
-    //   console.log('whoopsies')
-    //   res.redirect("/login")
-    // }
 
 app.post("/logout", (req,res)=>{
   console.log ("A user is logging out.")
@@ -221,11 +200,4 @@ app.post("/register", (req,res)=>{
 
 app.listen(PORT, () => {
   console.log(`Matt\'s Tiny app listening on port ${PORT}!`);
-  console.log(users)
 });
-
-
-// app.get("/hello", (req, res) => {
-//   var template = "<html><body>{var}Hello <b>World</b></body></html>\n"
-//   res.send(template.replace('{var}', 'this'));
-// });
