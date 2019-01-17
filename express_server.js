@@ -13,16 +13,17 @@ var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
-
+templateVars={
+  uname: false
+}
 const users= {
-  Ex:{
+  ExampleBoy:{
     id: generateRandomString(),
-    name: "Example",git
-    Email: "ex@amp.le",
+    name: "Example",
+    email: "ex@amp.le",
     password: "password"
   }
 };
-
 
 function generateRandomString() {
   var allChars= ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',1,2,3,4,5,6,7,8,9,0]
@@ -34,7 +35,8 @@ function generateRandomString() {
   return tempArr.join('')
 };
 
-//                  GETS
+
+//                  GET
 //if nothing is sent from the url
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -46,16 +48,16 @@ app.get("/urls.json", (req, res) => {
 
 //lists all URLs
 app.get("/urls", (req, res) => {
-  let templateVars = {
-   shortURL: req.params.id,
-   urls: urlDatabase,
-   username:req.cookies["name"]
-   };
+    if (req.cookies.user_id){
+    let uid= req.cookies.user_id;
+    templateVars.uname= users[uid]['name'] 
+  }
+   templateVars.shortURL= req.params.id;
+   templateVars.urls= urlDatabase;
+
 
   res.render("urls_index", templateVars);
 });
-
-
 
 //redirect urls function
 app.get("/u/:shortURL", (req, res) => {
@@ -67,27 +69,43 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-
 app.get("/urls/new", (req, res) => {
   let templateVars= {
-      username:req.cookies["name"]
+      username:req.cookies["user_id"]
   }
   res.render("urls_new", templateVars);
 
 });
 
-
 //view a url's profile by its id
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id,
-  urls: urlDatabase  };
+   if (req.cookies.user_id){
+    let uid= req.cookies.user_id;
+    console.log(users[uid]['name'])
+    templateVars.uname= users[uid]['name'] 
+  }
+  templateVars.shortURL = req.params.id;
+  templateVars.urls= urlDatabase;
   res.render("urls_show", templateVars);
 });
 
 app.get("/register", (req, res)=>{
-   res.render("register.ejs")
-})
+   if (req.cookies.user_id){
+    let uid= req.cookies.user_id;
+    templateVars.uname= users[uid]['name'] 
+  }
+   res.render("register.ejs", templateVars)
+  });
 
+app.get("/login", (req, res)=>{
+    if (req.cookies.user_id){
+    let uid= req.cookies.user_id;
+    console.log(users[uid]['name'])
+    templateVars.uname= users[uid]['name'] 
+  }
+
+  res.render('login.ejs', templateVars)
+})
 
 
 
@@ -103,16 +121,51 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/login", (req,res)=> {
-  res.cookie("name",req.body.username)
-  console.log(`${req.body.username} just logged in.`);
-  res.redirect('/urls')
+    function findUser(email, password){
+      for (emails in users)
+        console.log (users[emails]['email'])
+
+      {
+       if(users[emails]['email'] === email && users[emails]['password'] === password){
+        return true
+       } else {
+        return false
+       }
+    }
+  }
+  var check = findUser(req.body.email, req.body.password);
+  console.log(check);
+
+  if (check === true){
+       console.log(`${users[emails]['name']} just logged in.`);
+       res.cookie("user_id", users[emails]['id']);
+       res.redirect('/urls')
+  } else {
+    res.status(400);
+      console.log('whoopsies')
+      res.redirect("/login")
+  }
+
 
 });
+    // if(users[emails]['email'] === req.body.email && users[emails]['password'] === req.body.password){
+    //   res.cookie("user_id",req.body.id)
+  
+    // //   console.log(`${users[emails]['name']} just logged in.`);
+    // //   res.cookie("user_id", users[emails]['id']);
+    // //   res.redirect('/urls')
+    // return true
+    // } else {
+    //   res.status(400);
+    //   console.log('whoopsies')
+    //   res.redirect("/login")
+    // }
 
 app.post("/logout", (req,res)=>{
   console.log ("A user is logging out.")
-  res.clearCookie("name")
+  res.clearCookie("user_id")
   res.redirect('/urls')
+  templateVars.uname= false;
 });
 
 app.post("/urls/:id/delete", (req, res) =>{
@@ -130,17 +183,37 @@ res.redirect("/urls")
 });
 
 
-app.post("/registering/", (req,res)=>{
-  users[req.body.id]=
-       {
-        id: generateRandomString(),
-        name: req.body.id,
-        email: req.body.email,
-        password: req.body.password
-        }
+app.post("/register", (req,res)=>{
+  var check = false;
+  let errorMes= '';
+  for (username in users){
+    if (users[username]['email'] === req.body.email){
+      check = true;
+      errorMes='User registration failed, email already exists.';
+    }
+   }
+    if (!req.body.email || !req.body.password){
+      res.status(400);
+      check= true
+      errorMes= 'User registration failed, invalid e-mail or password.'
+    }
+    if (check === true){
+      res.status(400);
+      console.log(errorMes)}
+    else {
+      let newId=generateRandomString(); 
 
-
-  console.log(` New user: ${users[req.body.id]['name']}`);
+      users[newId]=
+         {
+          id: newId, 
+          name: req.body.id,
+          email: req.body.email,
+          password: req.body.password
+          }
+      res.cookie("user_id", newId)
+      
+    }
+    
     res.redirect('/urls')
 });
 
@@ -148,6 +221,7 @@ app.post("/registering/", (req,res)=>{
 
 app.listen(PORT, () => {
   console.log(`Matt\'s Tiny app listening on port ${PORT}!`);
+  console.log(users)
 });
 
 

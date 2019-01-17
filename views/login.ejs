@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Login to Matt's Cool	</title>
+</head>
+<% include partials/_header.ejs %>
+
+<% if (uname){ %>
+	Logged in as: <b><%= uname %></b> 
+	<form method ="POST" action="/logout">
+		<input type="submit" value= "Log out">
+	</form>
+<% } else{ %>  
+	<form method="POST" action="/login">
+		<input type= "text" default="Your e-mail" name ="email"><br>
+		<input type= "text" default="Your password" name ="password">
+	    <input type="submit" value="Login">
+	</form>
+	<form method ="GET" action="/register"> <br>
+		<input type="submit" value="Register">
+	</form>
+<% } %>
+
+<body>
+
+</body>
+</html>

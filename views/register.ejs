@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Register for Matt's Tiny App.</title>
+<% include partials/_header.ejs %>
+	
 </head>
 <body>
-	<form method ="POST" action = "/registering">
-	<input type="text" placeholder="Your name" name="id"><br>
-	<input type="text" placeholder="E-mail" name="email"><br>
-	<input type="text" placeholder="Password" type="password" name="password">
-	<input type="submit" value="Register" name="register">
-
+	<h3 style="font-family: verdana, sans-serif;"> Register now!</h3> <br><br>
+	<form method ="POST" action = "/register">
+		<input type="text" placeholder="Your name" name="id"><br>
+		<input type="text" placeholder="E-mail" name="email"><br>
+		<input type="text" placeholder="Password" type="password" name="password">
+		<input type="submit" value="Register" name="register">
 	</form>
 </body>
 </html>

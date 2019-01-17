@@ -1,21 +1,24 @@
-</title>
 
+<% if (uname) { %>
+
+<form method ="POST" action="/logout">
+	Logged in as <b><%= uname %></b> <input type="submit" value= "Log out">
+</form>
+
+
+<%}else{%>
+
+<form method ="GET" action="/login">
+	<input type="submit" value="Login">
+</form>
+<form method ="GET" action="/register">
+	<input type="submit" value="Register">
+</form>
+<% } %>
 <b><center> <h1 style="font-family: verdana, sans-serif;"> MATT'S COOL TINY APP</h1></b></center>
 <br>     
-     <% if(username){ %>
-	   	Logged in as : <b><%= username %></b> 
-	   	<form method ="POST" action="/logout">
-	   	<input type="submit" value= "Log out">
-	   	</form>
- 	<% } else{ %>  
-    <form method="POST" action="/login">
-    	<input type= "text" default="Your Username" name ="username">
-        <input type="submit" value="Login">
-    </form>
-    <form method ="GET" action="/register"> <br><input type="submit" value="Register"></form>
-	<% } %>
 
-</header>
+
 
 
 
