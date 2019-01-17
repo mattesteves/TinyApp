@@ -1,7 +1,7 @@
-<header>
-	<title>Matt's Tiny App</title>
+</title>
 
-     
+<b><center> <h1 style="font-family: verdana, sans-serif;"> MATT'S COOL TINY APP</h1></b></center>
+<br>     
      <% if(username){ %>
 	   	Logged in as : <b><%= username %></b> 
 	   	<form method ="POST" action="/logout">
@@ -12,6 +12,7 @@
     	<input type= "text" default="Your Username" name ="username">
         <input type="submit" value="Login">
     </form>
+    <form method ="GET" action="/register"> <br><input type="submit" value="Register"></form>
 	<% } %>
 
 </header>
