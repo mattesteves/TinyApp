@@ -103,7 +103,8 @@ if (req.session.user_id){
     templateVars.uname= users[uid]['name'];
     templateVars.uemail= users[uid]['email'];
     templateVars.id=uid;
-    templateVars.url  
+    templateVars.url; 
+    console.log(req.session.user_id) 
   res.render("urls_new", templateVars);
   }
   else {
@@ -115,15 +116,23 @@ if (req.session.user_id){
 
 //view a url's profile by its id
 app.get("/urls/:id", (req, res) => {
-   if (req.session.user_id){
+    var short = req.params.id;
+    //console.log(urlDatabase[req.session.user_id][short]);
+   if(req.session.user_id){
+    if (urlDatabase[req.session.user_id][short]){
     let uid= req.session.user_id;
     templateVars.uname= users[uid]['name'];
     templateVars.uemail= users[uid]['email'];
     templateVars.id=uid;  
+  } else {
+    templateVars.id = "nope";
   }
   templateVars.shortURL = req.params.id;
   templateVars.urls= urlDatabase;
   res.render("urls_show", templateVars);
+}else {
+  res.redirect("/login")
+}
 });
 
 app.get("/register", (req, res)=>{
@@ -205,6 +214,7 @@ var test = req.params.id;
 let uid = req.session.user_id;
 urlDatabase[uid][req.params.id]= req.body.longURL
 console.log ('attempting to change ' + test)
+console.log(uid)
 res.redirect("/urls")
 });
 
