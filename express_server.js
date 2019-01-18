@@ -25,6 +25,7 @@ var urlDatabase = {
 };
 templateVars={
   uname: false,
+  uemail: false,
   id: false 
 }
 const users= {
@@ -62,7 +63,8 @@ app.get("/urls", (req, res) => {
     if (req.session.user_id){
     let uid= req.session.user_id;
     console.log(req.session.user_id)
-    templateVars.uname= users[uid]['name']
+    templateVars.uname= users[uid]['name'];
+    templateVars.uemail=users[uid]['email'];
     templateVars.id=uid; 
   }
    templateVars.shortURL= req.params.id;
@@ -95,6 +97,7 @@ app.get("/urls/new", (req, res) => {
 if (req.session.user_id){
     let uid= req.session.user_id  ;
     templateVars.uname= users[uid]['name'];
+    templateVars.uemail= users[uid]['email'];
     templateVars.id=uid;
     templateVars.url  
   res.render("urls_new", templateVars);
@@ -111,6 +114,7 @@ app.get("/urls/:id", (req, res) => {
    if (req.session.user_id){
     let uid= req.session.user_id;
     templateVars.uname= users[uid]['name'];
+    templateVars.uemail= users[uid]['email'];
     templateVars.id=uid;  
   }
   templateVars.shortURL = req.params.id;
@@ -121,7 +125,8 @@ app.get("/urls/:id", (req, res) => {
 app.get("/register", (req, res)=>{
    if (req.session.user_id){
     let uid= req.session.user_id;
-    templateVars.uname= users[uid]['name'] 
+    templateVars.uname= users[uid]['name'];
+    templateVars.uemail= users[uid]['email'] 
   }
    res.render("register.ejs", templateVars)
   });
@@ -129,7 +134,8 @@ app.get("/register", (req, res)=>{
 app.get("/login", (req, res)=>{
     if (req.session.user_id){
     let uid= req.session.user_id;
-    templateVars.uname= users[uid]['name'] 
+    templateVars.uname= users[uid]['name'];
+    templateVars.uemail= users[uid]['email'] ; 
   }
 
   res.render('login.ejs', templateVars)
@@ -205,6 +211,8 @@ app.post("/logout", (req,res)=>{
 
   res.redirect('/urls');
   templateVars.uname= false;
+  templateVars.uemail= false;
+
   templateVars.id=false; 
 });
 
