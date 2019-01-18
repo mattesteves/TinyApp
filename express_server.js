@@ -8,6 +8,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
+const bcrypt= require('bcrypt')
+
 //creating my intital arry of urls
 var urlDatabase = {
   default:{
@@ -144,7 +146,10 @@ app.post("/login", (req,res)=> {
       for (emails in users) 
       console.log(users[emails]['email'])
       {
-       if(users[emails]['email'] === email && users[emails]['password'] === password){
+       if(users[emails]['email'] === email && bcrypt.compareSync(password,users[emails]['password'] )
+)
+
+       {
         return true
        } else {
         return false
@@ -217,13 +222,13 @@ app.post("/register", (req,res)=>{
           id: newId, 
           name: req.body.id,
           email: req.body.email,
-          password: req.body.password
+          password: bcrypt.hashSync(req.body.password, 10)
           }
       res.cookie("user_id", newId)
       urlDatabase[newId]={};
       console.log (urlDatabase)
     }
-    
+    console.log(users)
     res.redirect('/urls')
 });
 
