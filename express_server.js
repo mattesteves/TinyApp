@@ -80,9 +80,8 @@ app.get("/urls", (req, res) => {
 
 //redirect urls function
 app.get("/u/:shortURL", (req, res) => {
-  // let longURL = ...
+
   let shortCode = req.params.shortURL;
-  //let longURL = urlDatabase[code]
 
   function longURL(code){
     for( user in urlDatabase){
@@ -116,8 +115,8 @@ if (req.session.user_id){
 
 //view a url's profile by its id
 app.get("/urls/:id", (req, res) => {
-    var short = req.params.id;
-    //console.log(urlDatabase[req.session.user_id][short]);
+  var short = req.params.id;
+
    if(req.session.user_id){
     if (urlDatabase[req.session.user_id][short]){
     let uid= req.session.user_id;
@@ -130,6 +129,10 @@ app.get("/urls/:id", (req, res) => {
   templateVars.shortURL = req.params.id;
   templateVars.urls= urlDatabase;
   res.render("urls_show", templateVars);
+}
+else{
+  templateVars.errorMes="You're not logged in, you cannot edit a url if you are not logged in. "
+  res.render("error", templateVars)
 }
 });
 
@@ -208,12 +211,17 @@ res.redirect("/urls")
 
 app.post("/urls/:id/POST", (req, res) =>{
 var test = req.params.id;
+if (req.body.longURL === ''){
+  templateVars.errorMes= "You cannot submit an empty url";
+  res.render("error", templateVars)
+
+} else{
 let uid = req.session.user_id;
 urlDatabase[uid][req.params.id]= req.body.longURL
 console.log ('attempting to change ' + test)
-console.log(uid)
+console.log('this is  the long url:'+ req.body.longURL)
 res.redirect("/urls")
-});
+}});
 
 app.post("/logout", (req,res)=>{
   console.log ("A user is logging out.")
