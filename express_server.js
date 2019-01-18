@@ -160,8 +160,8 @@ app.post("/login", (req,res)=> {
 
 app.post("/urls/:id/delete", (req, res) =>{
 var test= req.params.id;
-let uid = req.cookies.uder_id;
-delete urlDatabase[uid][req.params.id];
+let uid = req.cookies.user_id;
+delete urlDatabase[uid][test];
 console.log ('attempting to delete' + test)
 res.redirect("/urls")
 });
