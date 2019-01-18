@@ -66,10 +66,20 @@ app.get("/urls", (req, res) => {
 //redirect urls function
 app.get("/u/:shortURL", (req, res) => {
   // let longURL = ...
-  let code = req.params.shortURL;
-  let longURL = urlDatabase[code];
+  let shortCode = req.params.shortURL;
+  //let longURL = urlDatabase[code]
 
-  res.redirect(longURL);
+  function longURL(code){
+    for( user in urlDatabase){
+      if(urlDatabase[user][code]){
+        return urlDatabase[user][code]
+
+      }
+    }
+  }  
+  var long= longURL(shortCode);
+
+  res.redirect(long);
 });
 
 app.get("/urls/new", (req, res) => {
