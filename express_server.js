@@ -10,11 +10,14 @@ app.use(cookieParser());
 
 //creating my intital arry of urls
 var urlDatabase = {
+  default:{
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
+  }
 };
 templateVars={
-  uname: false
+  uname: false,
+  id: false 
 }
 const users= {
   ExampleBoy:{
@@ -50,7 +53,8 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
     if (req.cookies.user_id){
     let uid= req.cookies.user_id;
-    templateVars.uname= users[uid]['name'] 
+    templateVars.uname= users[uid]['name']
+    templateVars.id=uid; 
   }
    templateVars.shortURL= req.params.id;
    templateVars.urls= urlDatabase;
@@ -69,10 +73,16 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars= {
-      username:req.cookies["user_id"]
-  }
+if (req.cookies.user_id){
+    let uid= req.cookies.user_id;
+    templateVars.uname= users[uid]['name'];
+    templateVars.id=uid;
+    templateVars.url  
   res.render("urls_new", templateVars);
+  }
+  else {
+    res.render("register", templateVars);
+  }
 
 });
 
@@ -80,7 +90,8 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
    if (req.cookies.user_id){
     let uid= req.cookies.user_id;
-    templateVars.uname= users[uid]['name'] 
+    templateVars.uname= users[uid]['name'];
+    templateVars.id=uid;  
   }
   templateVars.shortURL = req.params.id;
   templateVars.urls= urlDatabase;
@@ -111,13 +122,17 @@ app.get("/login", (req, res)=>{
 //adds new URL
 app.post("/urls", (req, res) => {
   var rando = generateRandomString();
-  urlDatabase[rando]= req.body.longURL;
+  let uid= req.cookies.user_id;
+  urlDatabase[uid][rando]= req.body.longURL;
+  console.log(uid)
+  console.log(urlDatabase)
   res.redirect(`/urls/${rando}`);       
 });
 
 app.post("/login", (req,res)=> {
     function findUser(email, password){
-      for (emails in users)
+      for (emails in users) 
+      console.log(users[emails]['email'])
       {
        if(users[emails]['email'] === email && users[emails]['password'] === password){
         return true
@@ -134,10 +149,29 @@ app.post("/login", (req,res)=> {
        res.redirect('/urls')
   } else {
     res.status(400);
+      console.log("Login failed.")
+      console.log(users)
       res.redirect("/login")
   }
 
 
+});
+
+
+app.post("/urls/:id/delete", (req, res) =>{
+var test= req.params.id;
+let uid = req.cookies.uder_id;
+delete urlDatabase[uid][req.params.id];
+console.log ('attempting to delete' + test)
+res.redirect("/urls")
+});
+
+app.post("/urls/:id/POST", (req, res) =>{
+var test = req.params.id;
+let uid = req.cookies.user_id;
+urlDatabase[uid][req.params.id]= req.body.longURL
+console.log ('attempting to change ' + test)
+res.redirect("/urls")
 });
 
 app.post("/logout", (req,res)=>{
@@ -145,22 +179,8 @@ app.post("/logout", (req,res)=>{
   res.clearCookie("user_id")
   res.redirect('/urls')
   templateVars.uname= false;
+  templateVars.id=false; 
 });
-
-app.post("/urls/:id/delete", (req, res) =>{
-var test= req.params.id
-delete urlDatabase[req.params.id]
-console.log ('attempting to delete' + test)
-res.redirect("/urls")
-});
-
-app.post("/urls/:id/POST", (req, res) =>{
-var test = req.params.id;
-urlDatabase[req.params.id]= req.body.longURL
-console.log ('attempting to change ' + test)
-res.redirect("/urls")
-});
-
 
 app.post("/register", (req,res)=>{
   var check = false;
@@ -190,7 +210,8 @@ app.post("/register", (req,res)=>{
           password: req.body.password
           }
       res.cookie("user_id", newId)
-      
+      urlDatabase[newId]={};
+      console.log (urlDatabase)
     }
     
     res.redirect('/urls')
