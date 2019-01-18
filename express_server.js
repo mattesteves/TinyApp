@@ -5,10 +5,16 @@ var PORT = 8080; // default port 8080
 app.set("view engine", "ejs")
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
-var cookieParser = require('cookie-parser');
-app.use(cookieParser());
+// var cookieParser = require('cookie-parser');
+// app.use(cookieParser());
 
-const bcrypt= require('bcrypt')
+var cookieSession = require('cookie-session');
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1', 'key2']
+}))
+
+var bcrypt = require('bcrypt')
 
 //creating my intital arry of urls
 var urlDatabase = {
@@ -51,10 +57,11 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-//lists all URLs
+
 app.get("/urls", (req, res) => {
-    if (req.cookies.user_id){
-    let uid= req.cookies.user_id;
+    if (req.session.user_id){
+    let uid= req.session.user_id;
+    console.log(req.session.user_id)
     templateVars.uname= users[uid]['name']
     templateVars.id=uid; 
   }
@@ -85,8 +92,8 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-if (req.cookies.user_id){
-    let uid= req.cookies.user_id;
+if (req.session.user_id){
+    let uid= req.session;
     templateVars.uname= users[uid]['name'];
     templateVars.id=uid;
     templateVars.url  
@@ -100,8 +107,8 @@ if (req.cookies.user_id){
 
 //view a url's profile by its id
 app.get("/urls/:id", (req, res) => {
-   if (req.cookies.user_id){
-    let uid= req.cookies.user_id;
+   if (req.session.user_id){
+    let uid= req.session.user_id;
     templateVars.uname= users[uid]['name'];
     templateVars.id=uid;  
   }
@@ -111,16 +118,16 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.get("/register", (req, res)=>{
-   if (req.cookies.user_id){
-    let uid= req.cookies.user_id;
+   if (req.session.user_id){
+    let uid= req.session.user_id;
     templateVars.uname= users[uid]['name'] 
   }
    res.render("register.ejs", templateVars)
   });
 
 app.get("/login", (req, res)=>{
-    if (req.cookies.user_id){
-    let uid= req.cookies.user_id;
+    if (req.session.user_id){
+    let uid= req.session.user_id;
     templateVars.uname= users[uid]['name'] 
   }
 
@@ -134,7 +141,7 @@ app.get("/login", (req, res)=>{
 //adds new URL
 app.post("/urls", (req, res) => {
   var rando = generateRandomString();
-  let uid= req.cookies.user_id;
+  let uid= req.session.user_id;
   urlDatabase[uid][rando]= req.body.longURL;
   console.log(uid)
   console.log(urlDatabase)
@@ -160,7 +167,8 @@ app.post("/login", (req,res)=> {
 
   if (check === true){
        console.log(`${users[emails]['name']} just logged in.`);
-       res.cookie("user_id", users[emails]['id']);
+         req.session.user_id =users[emails]['id'];
+       //res.cookie("user_id", users[emails]['id']);
        res.redirect('/urls')
   } else {
     res.status(400);
@@ -175,7 +183,7 @@ app.post("/login", (req,res)=> {
 
 app.post("/urls/:id/delete", (req, res) =>{
 var test= req.params.id;
-let uid = req.cookies.user_id;
+let uid = req.session.user_id;
 delete urlDatabase[uid][test];
 console.log ('attempting to delete' + test)
 res.redirect("/urls")
@@ -183,7 +191,7 @@ res.redirect("/urls")
 
 app.post("/urls/:id/POST", (req, res) =>{
 var test = req.params.id;
-let uid = req.cookies.user_id;
+let uid = req.session.user_id;
 urlDatabase[uid][req.params.id]= req.body.longURL
 console.log ('attempting to change ' + test)
 res.redirect("/urls")
@@ -191,7 +199,7 @@ res.redirect("/urls")
 
 app.post("/logout", (req,res)=>{
   console.log ("A user is logging out.")
-  res.clearCookie("user_id")
+  res.clearCookie('session')
   res.redirect('/urls')
   templateVars.uname= false;
   templateVars.id=false; 
@@ -224,7 +232,8 @@ app.post("/register", (req,res)=>{
           email: req.body.email,
           password: bcrypt.hashSync(req.body.password, 10)
           }
-      res.cookie("user_id", newId)
+          req.session.user_id=newId;
+      // res.cookie("user_id", newId)
       urlDatabase[newId]={};
       console.log (urlDatabase)
     }
