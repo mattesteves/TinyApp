@@ -4,9 +4,11 @@
 <body>
 
 
-<% if (!id || id === "nope") { %>
+<% if (!id){ %>
+Please log in to start editing URLs.
+	
+<% } else if (id === "nope") { %>
 		You do not have permission to edit this URL.
-		<%= id %>
 <% } else { %>
 <h1>Short URL: <%= shortURL %></h1>
 <h2> for <%= urls[id][shortURL] %> </h2>

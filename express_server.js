@@ -130,8 +130,6 @@ app.get("/urls/:id", (req, res) => {
   templateVars.shortURL = req.params.id;
   templateVars.urls= urlDatabase;
   res.render("urls_show", templateVars);
-}else {
-  res.redirect("/login")
 }
 });
 
@@ -188,13 +186,12 @@ app.post("/login", (req,res)=> {
   if (check === true){
        console.log(`${users[emails]['name']} just logged in.`);
          req.session.user_id =users[emails]['id'];
-       //res.cookie("user_id", users[emails]['id']);
        res.redirect('/urls')
   } else {
     res.status(400);
       console.log("Login failed.")
-      console.log(users)
-      res.redirect("/login")
+      templateVars.errorMes= "Login failed\; invalid username or password."
+      res.render("error", templateVars)
   }
 
 
@@ -236,13 +233,16 @@ app.post("/register", (req,res)=>{
   for (username in users){
     if (users[username]['email'] === req.body.email){
       check = true;
-      errorMes='User registration failed, email already exists.';
+      templateVars.errorMes='User registration failed, email already exists.';
+        res.render("error", templateVars)
+
     }
    }
     if (!req.body.email || !req.body.password){
       res.status(400);
       check= true
-      errorMes= 'User registration failed, invalid e-mail or password.'
+      templateVars.errorMes= 'User registration failed, invalid e-mail or password.'
+      res.render("error", templateVars)
     }
     if (check === true){
       res.status(400);
@@ -261,9 +261,10 @@ app.post("/register", (req,res)=>{
       // res.cookie("user_id", newId)
       urlDatabase[newId]={};
       console.log (urlDatabase)
-    }
-    console.log(users)
+      console.log(users)
     res.redirect('/urls')
+    }
+
 });
 
 
