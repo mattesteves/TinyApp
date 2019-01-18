@@ -3,6 +3,10 @@
 <% include partials/_header.ejs %>
 <body>
 
+
+<% if(!id || id === "nope") { %>
+		You do not have permission to edit this URL.
+<% } else { %>
 <h1>Short URL: <%= shortURL %></h1>
 <h2> for <%= urls[id][shortURL] %> </h2>
 <br>
@@ -17,6 +21,7 @@
 <form method ="GET" action="/urls/">
 	<input type ="submit" value="My URLS">
 </form>
-
+<% } %>
 </body>
+
 </html>

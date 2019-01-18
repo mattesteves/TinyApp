@@ -93,13 +93,14 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
 if (req.session.user_id){
-    let uid= req.session;
+    let uid= req.session.user_id  ;
     templateVars.uname= users[uid]['name'];
     templateVars.id=uid;
     templateVars.url  
   res.render("urls_new", templateVars);
   }
   else {
+    templateVars.id="nope"
     res.render("register", templateVars);
   }
 
@@ -199,8 +200,10 @@ res.redirect("/urls")
 
 app.post("/logout", (req,res)=>{
   console.log ("A user is logging out.")
-  res.clearCookie('session')
-  res.redirect('/urls')
+  res.clearCookie('session');
+  res.clearCookie('session.sig');
+
+  res.redirect('/urls');
   templateVars.uname= false;
   templateVars.id=false; 
 });
