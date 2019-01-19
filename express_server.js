@@ -1,22 +1,17 @@
-//server stuff and dependendcies
 var express = require("express");
 var app = express();
 var PORT = 8080; // default port 8080
 app.set("view engine", "ejs")
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
-// var cookieParser = require('cookie-parser');
-// app.use(cookieParser());
 
 var cookieSession = require('cookie-session');
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2']
 }))
-
 var bcrypt = require('bcrypt')
 
-//creating my intital arry of urls
 var urlDatabase = {
   default:{
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -28,7 +23,7 @@ templateVars={
   uemail: false,
   id: false 
 }
-const users= {
+var users= {
   ExampleBoy:{
     id: generateRandomString(),
     name: "Example",
@@ -45,7 +40,8 @@ function generateRandomString() {
     tempArr.push(allChars[x]);
   }
   return tempArr.join('')
-};
+}
+
 
 
 //                  GET
@@ -66,7 +62,6 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
     if (req.session.user_id){
     let uid= req.session.user_id;
-    console.log(req.session.user_id)
     templateVars.uname= users[uid]['name'];
     templateVars.uemail=users[uid]['email'];
     templateVars.id=uid; 
@@ -105,8 +100,7 @@ if (req.session.user_id){
     templateVars.uname= users[uid]['name'];
     templateVars.uemail= users[uid]['email'];
     templateVars.id=uid;
-    templateVars.url; 
-    console.log(req.session.user_id) 
+    templateVars.url;  
   res.render("urls_new", templateVars);
   }
   else {
@@ -171,19 +165,6 @@ app.get("/login", (req, res)=>{
    res.render("login.ejs", templateVars)
   }});
 
-// app.get("/login", (req, res)=>{
-//     if (req.session.user_id){
-//     let uid= req.session.user_id;
-//     templateVars.uname= users[uid]['name'];
-//     templateVars.uemail= users[uid]['email'] ; 
-//   }
-
-//   res.render('login.ejs', templateVars)
-// })
-
-
-
-
 
 
 //             POSTS
@@ -197,15 +178,12 @@ app.post("/urls", (req, res) => {
     res.render("error", templateVars);
   }else{
   urlDatabase[uid][rando]= req.body.longURL;
-  console.log(uid)
-  console.log(urlDatabase)
   res.redirect(`/urls/${rando}`);       
 }});
 
 app.post("/login", (req,res)=> {
     function findUser(email, password){
       for (emails in users) 
-      console.log(users[emails]['email'])
       {
        if(users[emails]['email'] === email && bcrypt.compareSync(password,users[emails]['password'] )
 )
@@ -226,7 +204,7 @@ app.post("/login", (req,res)=> {
   } else {
     res.status(400);
       console.log("Login failed.")
-      templateVars.errorMes= "Login failed\; invalid username or password."
+      templateVars.errorMes= "Login failed ; invalid username or password."
       res.render("error", templateVars)
   }
 
@@ -251,8 +229,7 @@ if (req.body.longURL === ''){
 } else{
 let uid = req.session.user_id;
 urlDatabase[uid][req.params.id]= req.body.longURL
-console.log ('attempting to change ' + test)
-console.log('this is  the long url:'+ req.body.longURL)
+console.log ('attempting to change ' + test);
 res.redirect("/urls")
 }});
 
@@ -287,7 +264,7 @@ app.post("/register", (req,res)=>{
     }
     if (check === true){
       res.status(400);
-      console.log(errorMes)}
+      }
     else {
       let newId=generateRandomString(); 
 
@@ -301,14 +278,10 @@ app.post("/register", (req,res)=>{
           req.session.user_id=newId;
       // res.cookie("user_id", newId)
       urlDatabase[newId]={};
-      console.log (urlDatabase)
-      console.log(users)
-    res.redirect('/urls')
+    res.redirect('/urls');
     }
 
 });
-
-
 
 app.listen(PORT, () => {
   console.log(`Matt\'s Tiny app listening on port ${PORT}!`);
