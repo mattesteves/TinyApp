@@ -86,15 +86,18 @@ app.get("/u/:shortURL", (req, res) => {
   function longURL(code){
     for( user in urlDatabase){
       if(urlDatabase[user][code]){
-        return urlDatabase[user][code]
-
-      }
+        return urlDatabase[user][code] }
     }
+      return "notfound"
   }  
   var long= longURL(shortCode);
+  if (long ==="notfound"){
+    templateVars.errorMes="There is no shortened url with that ID."
+    res.render("error", templateVars)
+  }else{
 
   res.redirect(long);
-});
+}});
 
 app.get("/urls/new", (req, res) => {
 if (req.session.user_id){
@@ -113,9 +116,25 @@ if (req.session.user_id){
 
 });
 
+
+
+
 //view a url's profile by its id
 app.get("/urls/:id", (req, res) => {
   var short = req.params.id;
+  function checkExists (url){
+    for(usernames in urlDatabase){
+      if (urlDatabase[usernames][url]){
+        return true
+      }
+    }
+    return false
+  }
+  var checko = checkExists(short);
+  if (checko === false){
+    templateVars.errorMes="That shortened URL does not exist."
+    res.render("error", templateVars)
+  } else {
 
    if(req.session.user_id){
     if (urlDatabase[req.session.user_id][short]){
@@ -134,7 +153,7 @@ else{
   templateVars.errorMes="You're not logged in, you cannot edit a url if you are not logged in. "
   res.render("error", templateVars)
 }
-});
+}});
 
 app.get("/register", (req, res)=>{
    if (req.session.user_id){
@@ -163,11 +182,15 @@ app.get("/login", (req, res)=>{
 app.post("/urls", (req, res) => {
   var rando = generateRandomString();
   let uid= req.session.user_id;
+  if (req.body.longURL===''){
+    templateVars.errorMes="You cannot submit an empty url.";
+    res.render("error", templateVars);
+  }else{
   urlDatabase[uid][rando]= req.body.longURL;
   console.log(uid)
   console.log(urlDatabase)
   res.redirect(`/urls/${rando}`);       
-});
+}});
 
 app.post("/login", (req,res)=> {
     function findUser(email, password){

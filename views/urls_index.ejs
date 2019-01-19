@@ -6,9 +6,12 @@
 	<h2>Your Shortened URLs</h2> 
 <ul>
     <% for(shorts in urls[id]) { %>
-		    <form method="POST" action="/urls/<%= shorts %>/delete">
+		    
         <li><%= shorts %> = <%= urls[id][shorts] %>
-		    	<a href="/urls/<%= shorts %>"> &#x1F6E0 </a>
+        		<form method="GET" action="/urls/<%= shorts %>/">
+
+		    	<input type="submit" value="Edit &#x1F6E0"></form>	
+		    	<form method="POST" action="/urls/<%= shorts %>/delete">
 
 		    	<input type="submit" value="DESTROY!! &#x1F5d1">	
 	<% } %>	    		
