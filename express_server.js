@@ -163,28 +163,26 @@ app.get("/register", (req, res)=>{
    res.render("register.ejs", templateVars)
   }});
 
+app.get("/login", (req, res)=>{
+   if (req.session.user_id){
+    res.redirect("/urls")
+   }else { 
+  
+   res.render("login.ejs", templateVars)
+  }});
 
-// app.get("/register", (req, res)=>{
-//    if (req.session.user_id){
+// app.get("/login", (req, res)=>{
+//     if (req.session.user_id){
 //     let uid= req.session.user_id;
 //     templateVars.uname= users[uid]['name'];
-//     templateVars.uemail= users[uid]['email'] 
+//     templateVars.uemail= users[uid]['email'] ; 
 //   }
-//    res.render("register.ejs", templateVars)
-//   });
+
+//   res.render('login.ejs', templateVars)
+// })
 
 
 
-
-app.get("/login", (req, res)=>{
-    if (req.session.user_id){
-    let uid= req.session.user_id;
-    templateVars.uname= users[uid]['name'];
-    templateVars.uemail= users[uid]['email'] ; 
-  }
-
-  res.render('login.ejs', templateVars)
-})
 
 
 
