@@ -111,7 +111,7 @@ if (req.session.user_id){
   }
   else {
     templateVars.id="nope"
-    res.render("register", templateVars);
+    res.render("login", templateVars);
   }
 
 });
@@ -157,12 +157,24 @@ else{
 
 app.get("/register", (req, res)=>{
    if (req.session.user_id){
-    let uid= req.session.user_id;
-    templateVars.uname= users[uid]['name'];
-    templateVars.uemail= users[uid]['email'] 
-  }
+    res.redirect("/urls")
+   }else { 
+  
    res.render("register.ejs", templateVars)
-  });
+  }});
+
+
+// app.get("/register", (req, res)=>{
+//    if (req.session.user_id){
+//     let uid= req.session.user_id;
+//     templateVars.uname= users[uid]['name'];
+//     templateVars.uemail= users[uid]['email'] 
+//   }
+//    res.render("register.ejs", templateVars)
+//   });
+
+
+
 
 app.get("/login", (req, res)=>{
     if (req.session.user_id){
